@@ -10,7 +10,8 @@ import { Eic } from './eic';
 import { Vpc } from './vpc';
 import * as fs from 'fs';
 import * as pg from './passwordGenerator';
-import { Policy, PolicyDocument } from 'aws-cdk-lib/aws-iam';
+import { VpcEndpoint } from 'aws-cdk-lib/aws-ec2';
+
 
 export class FirehoseS3LogStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -69,6 +70,8 @@ export class FirehoseS3LogStack extends cdk.Stack {
     const vpc = new Vpc(this,'firehose-test-ec2',{
       availabilityZones: availabilityZones,
     });
+    // VPC Private Link(Endpoint for firehose)
+    // const firehoseEndpoint = vpc.firehoseEndpoint();
     // Security Group
     const ec2SecurityGroup = new ec2.SecurityGroup(this, 'ec2-sg',{
       vpc:vpc.getVpc(),
@@ -115,7 +118,8 @@ export class FirehoseS3LogStack extends cdk.Stack {
     const defaultEscapeChars = '\\`"$';
     const dbPassword = pwg.generate({length:24});
     const replaceValues = {
-      __LOG_STREAM_NAME__: deliveryStreamName
+      __LOG_STREAM_NAME__: deliveryStreamName,
+      __FILREHOSE_ENDPOINT__: 'https://firehose.ap-northeast-1.amazonaws.com',
     };
     const userDataScript = pg.replaceStrings(userDataSource,replaceValues);
     for(const instance of instances){

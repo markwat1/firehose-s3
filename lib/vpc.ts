@@ -8,8 +8,10 @@ interface VpcProps  {
 
 export class Vpc extends Construct {
   private vpc:ec2.Vpc;
+  private azs: string[];
   constructor(scope: Construct, id: string, props: VpcProps) {
     super(scope, id);
+    this.azs = props.availabilityZones;
     this.vpc = new ec2.Vpc(this,id + 'vpc',{
       ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
       availabilityZones:props.availabilityZones,
@@ -34,5 +36,14 @@ export class Vpc extends Construct {
   }
   public getVpc(){
     return this.vpc;
+  }
+  public firehoseEndpoint() {
+    return new ec2.InterfaceVpcEndpoint(this,'Firehose Endpoint',{
+      vpc: this.vpc,
+      service: new ec2.InterfaceVpcEndpointAwsService('com.amazonaws.ap-northeast-1.kinesis-firehose'),
+      subnets: {
+        availabilityZones: this.azs,
+      },
+    });
   }
 }

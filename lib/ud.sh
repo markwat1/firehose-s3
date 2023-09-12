@@ -9,7 +9,7 @@ yum install –y aws-kinesis-agent
 sed -i 's/aws-kinesis-agent-user/root/' /etc/init.d/aws-kinesis-agent
 echo '{' > /etc/aws-kinesis/agent.json 
 echo '  "cloudwatch.emitMetrics" : false,' >> /etc/aws-kinesis/agent.json
-echo '  "firehose.endpoint": "https://firehose.ap-northeast-1.amazonaws.com",' >> /etc/aws-kinesis/agent.json 
+echo '  "firehose.endpoint": "__FIREHOSE_ENDPOINT__",' >> /etc/aws-kinesis/agent.json 
 echo '  "flows": [' >> /etc/aws-kinesis/agent.json 
 echo '    {' >> /etc/aws-kinesis/agent.json 
 echo '      "filePattern": "/var/log/messages",' >> /etc/aws-kinesis/agent.json 
